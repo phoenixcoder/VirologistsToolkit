@@ -11,12 +11,12 @@ class DNA(IntEnum):
     G = 2
     T = 3
 
-class NucleotideSubstitutionMatrix:
+class SubstitutionMatrix:
 
     """Represents a nucleotide substitution matrix for DNA or RNA bases. 
     
     Primarily imposes the following rule that a nucleotide cannot
-    have a subsitution rate higher than 0 with itself.  
+    have a substitution rate higher than 0 with itself.  
     """
 
     def __init__(self, nucleobaseType):
@@ -46,7 +46,7 @@ class NucleotideSubstitutionMatrix:
             self.substitutionMatrix[sourceBase] \
                 [destinationBase] = amount
 
-    def getSubstitutionMatrixCopy(self):
+    def getCopy(self):
         """Returns a defensive copy of the substitution matrix.
         
         :returns: Defensive copy of the substitution matrix.

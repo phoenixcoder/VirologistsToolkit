@@ -1,24 +1,24 @@
-from normalized_bias_calculator import NormalizedSubstitutionBiasCalculator
+from formulas import NormalizedSubstitutionBiasFormula
 from unittest import TestCase
 
-class TestNormalizedBiasCalculator(TestCase):
-    __testNormalizedSubstitutionBiasCalculator = None
+class TestNormalizedSubstitutionBiasFormula(TestCase):
+    __testNormalizedSubstitutionBiasFormula = None
 
     def setUp(self):
-        self.__testNormalizedSubstitutionBiasCalculator = \
-            NormalizedSubstitutionBiasCalculator()
+        self.__testNormalizedSubstitutionBiasFormula = \
+            NormalizedSubstitutionBiasFormula()
 
     def tearDown(self):
-        self.__testNormalizedSubstitutionBiasCalculator = None
+        self.__testNormalizedSubstitutionBiasFormula = None
 
     def test_NotNoneOnCreation(self):
         self.assertIsNotNone(self \
-            .__testNormalizedSubstitutionBiasCalculator, 
+            .__testNormalizedSubstitutionBiasFormula,
             """Test instance must not be None.""")
 
-    def test_CalculateBiasWithValidValues(self):
-        testMethod = self.__testNormalizedSubstitutionBiasCalculator \
-            .calculateBias
+    def test_CalculateWithValidValues(self):
+        testMethod = self.__testNormalizedSubstitutionBiasFormula \
+            .calculate
         errorMsg = """ \
         Bias must be equal to {0} with observed value {1} \
         and expected value {2}.  Result was: {3} \
@@ -42,9 +42,9 @@ class TestNormalizedBiasCalculator(TestCase):
         self.assertEqual(result, -0.5, errorMsg.format(-0.5, observed,
             expected, result))
 
-    def test_CalculateBiasWithInvalidValues(self):
-        testMethod = self.__testNormalizedSubstitutionBiasCalculator \
-            .calculateBias
+    def test_CalculateWithInvalidValues(self):
+        testMethod = self.__testNormalizedSubstitutionBiasFormula \
+            .calculate
 
         observed = 1
         expected = 0

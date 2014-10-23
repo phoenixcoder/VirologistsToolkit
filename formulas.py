@@ -1,7 +1,7 @@
 from abc import ABCMeta
 from abc import abstractmethod
 
-class NucleotideSubstitutionBiasCalculator:
+class Formula:
     
     """Provides a uniform interface for calculating the bias.
 
@@ -39,8 +39,8 @@ class NucleotideSubstitutionBiasCalculator:
 
         return result
 
-    def calculateBias(self, observed, expected):
-        """Calculates the bias for the expected and observed values.
+    def calculate(self, observed, expected):
+        """Applies the formula to the expected and observed values.
 
         Performs a validation before running the custom calculation
         implemented by the subclass.
@@ -60,11 +60,25 @@ class NucleotideSubstitutionBiasCalculator:
             and self.__validate(expected) \
             and expected != 0
         if valid:
-            result = self._customCalculation(float(observed),
+            result = self._calculation(float(observed),
                 float(expected))
         return result
 
     @abstractmethod
-    def _customCalculation(self, observed, expected):
-        """See :func: `calculateBias`"""
+    def _calculation(self, observed, expected):
+        """See :func: `calculate`"""
         pass
+
+class NormalizedSubstitutionBiasFormula(Formula):
+
+    """Container for the normalized substitution bias formula.
+
+    Used for portability of the formula:
+
+    [ (Observed Value) - (Expected Value) ] / (Expected Value)
+    """
+
+    def _calculation(self, observed, expected):
+        """Returns the result of the normalized substitution bias."""
+        result = (observed - expected) / expected
+        return result

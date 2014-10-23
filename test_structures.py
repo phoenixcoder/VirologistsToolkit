@@ -1,12 +1,11 @@
-from nucleotide_data_structures import NucleotideSubstitutionMatrix, DNA
+from structures import SubstitutionMatrix, DNA
 from unittest import TestCase
 
 class TestNucleotideSubstitutionMatrix(TestCase):
     testNucleotideSubstitutionMatrix = None
 
     def setUp(self):
-        self.testNucleotideSubstitutionMatrix = \
-            NucleotideSubstitutionMatrix(DNA)
+        self.testNucleotideSubstitutionMatrix = SubstitutionMatrix(DNA)
 
     def populateSubstitutionMatrix(self, matrix, nucleobaseType, step):
         for sourceBase in nucleobaseType:
@@ -31,14 +30,14 @@ class TestNucleotideSubstitutionMatrix(TestCase):
                     "Entry must be equal to 0.  " + \
                     "Entry({0}, {1}) was {2}.".format(ri, ci, amount))
 
-    def testGetSubstitutionMatrixCopy(self):
+    def testGetCopy(self):
         substitutionMatrix = self.testNucleotideSubstitutionMatrix \
             .substitutionMatrix
         step = 1
         self.populateSubstitutionMatrix(
             self.testNucleotideSubstitutionMatrix, DNA, step)
         defSubstitutionMatrix = self.testNucleotideSubstitutionMatrix \
-            .getSubstitutionMatrixCopy()
+            .getCopy()
 
         step = -1
         for ri, row in enumerate(defSubstitutionMatrix):
