@@ -27,8 +27,8 @@ class SubstitutionMatrix:
         self.nucleobaseType = nucleobaseType
         self.nucleobaseLength = len(list(nucleobaseType))
         self.substitutionMatrix = \
-            [[0 for x in xrange(self.nucleobaseLength)] \
-            for x in xrange(self.nucleobaseLength)]
+            [[0 for x in range(self.nucleobaseLength)] \
+            for x in range(self.nucleobaseLength)]
 
     def incrementSubstitution(self, sourceBase, destinationBase, amount):
         """Increments the entry at position source and destination by
