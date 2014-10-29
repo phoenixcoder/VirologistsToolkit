@@ -9,10 +9,6 @@ class XlManager:
     a dictionary of values to an Excel sheet.
     """
 
-    def __init__(self):
-        self.defaultInputFilepath = "./output.xlsx"
-        self.defaultOutputFilepath = "."
-
     def readResultsFromWorkbook(self, inputFilepath, reader):
         """Retrieves a dictionary of valid observed/expected matrices.
 
@@ -26,12 +22,22 @@ class XlManager:
         variables.  An agent is normally using this class so the agent
         will know which field to call on when this is done processing.
         """
-        workbook = load_workbook(inputFilepath)
-        wsNames = workbook.get_sheet_names()
-        for name in wsNames:
-            worksheet = workbook.get_sheet_by_name(name)
-            reader.read(worksheet)
+        if inputFilepath != None:
+            workbook = load_workbook(inputFilepath)
+            wsNames = workbook.get_sheet_names()
+            for name in wsNames:
+                worksheet = workbook.get_sheet_by_name(name)
+                reader.read(worksheet)
 
     def writeResultsToWorkbook(self, outputFilepath, writer):
-        # TODO Task #7: Implement an XlWriter Class
-        pass
+        """Creates a workbook to write results to.
+
+        Delegates control of the worksheets to the writer as the writer
+        has knowledge of the structure of the data set. This facilitates
+        writing data to the file and does nothing more.
+
+        :param outputFilepath: Path to the file
+        :param writer:         Writer of the data
+        """
+        workbook = Workbook()
+        writer.write(workbook)
