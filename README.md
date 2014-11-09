@@ -1,8 +1,17 @@
-# FASTA File Renamer
+# Virologist's Toolkit
+Contains helpful tools for very specific use scenarios. Many
+of the scripts are develop-on-demand with multiple attempts to abstract-away
+commonalities e.g. input/output file formats, to make the scripts as flexible
+as possible.  However, no guarantees can be made about what cases they address
+except for the user to examine the process of the scripts and determine for
+themselves whether it is applicable.
+
+## FASTA File Renamer
 
 It takes a FASTA file with the format:
 
->gi|{...accession #1...}|gb|{...accession #2...}.1| {...Virus Name...} {...Other...}\cr
+>{ ANY CHARS }|{ ANY CHARS }|{...accession #2...}.{ Single 0-9 }|
+{...Virus Name... virus/Virus} {...Other...}\cr
 {...Sequence...}\cr
 
 ...and transforms it into:
