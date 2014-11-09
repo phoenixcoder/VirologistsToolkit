@@ -21,3 +21,11 @@ It takes a FASTA file with the format:
 **Assumptions/Notes:**
  * {...Virus Name...} always ends with the word, "virus".
  * Uses underscore to replace all spaces in the header line.
+
+## XlFlexComputer (WORK-IN-PROGRESS)
+
+Generalized Excel computer that takes a single workbook and goes through
+worksheets applying a given formula to the data structures in the sheet.  The
+processing framework is advantageous as it creates an abstraction of the
+workbook so that users can focus on the computations they'd like to perform on
+each sheet.
