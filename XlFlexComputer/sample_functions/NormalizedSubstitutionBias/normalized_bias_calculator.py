@@ -1,5 +1,6 @@
 from openpyxl import load_workbook, Workbook
 from enum import IntEnum
+from math import fsum, pow, sqrt
 
 # Configuration
 INPUT = "data/2SubstitutionAnlysML_INPUT.xlsx"
@@ -82,10 +83,15 @@ def validWorksheet(worksheet):
         and validateHeaders(emStartRi, emStartCi, worksheet)
     return result
 
-def extractAndCalculateData(worksheet):
+def extractAndCalculateData(worksheet, formula):
     """Extracts the data and performs the calculations.
 
     Applies the normalized bias formula substitution-by-substitution.
+
+    :param worksheet: Worksheet the formula is to be applied to.
+    :param formula:   Formula that is to be applied to the worksheet.
+    :returns:         Dictionary-of-dictionaries with float values that were
+                      pulled from the worksheet.
     """
     resultData = dict()
     for row in DNA:
@@ -99,10 +105,36 @@ def extractAndCalculateData(worksheet):
                     .cell(row = oValRi, column = oValCi).value
                 eVal = worksheet \
                     .cell(row = eValRi, column = eValCi).value
-                amount = convertToFloat(biasFormula(oVal, eVal))
+                amount = convertToFloat(formula(oVal, eVal))
                 resultData[str(row) + " -> " + str(col)] = amount
 
     return resultData
+
+def calculateStandardScore(extractedData):
+    """Calculates the Standard Score on the given dataset.
+
+    For each substitution difference (labeled as diff), the formula is:
+
+    (standard score) = (diff - mean) / (standard deviation)
+
+    :params extractedData: Dictionary-of-Dictionaries with float values.
+    :returns:              Standard score for each datapoint.
+    """
+    results = dict()
+    mean = calculateMean(extractedData)
+    stdDev = calculateStandardDeviation(extractedData, mean)
+
+    if stdDev != 0:
+        for title in extractedData.keys():
+            subResults = dict()
+            for subTitle in extractedData[title].keys():
+                subResults[subTitle] = \
+                    (extractedData[title][subTitle] - mean) / stdDev
+            results[title] = subResults
+
+    print("Mean: " + str(mean))
+    print("Standard Deviation: " + str(stdDev))
+    return results
 
 def biasFormula(observed, expected):
     """Performs the normalized bias calculation."""
@@ -113,6 +145,12 @@ def biasFormula(observed, expected):
         result = (floatObs - floatExp) / (floatObs**2 + floatExp**2)
     return result
 
+def differenceFormula(observed, expected):
+    """Performs a simple substraction calculation between observed/expected."""
+    floatObs = convertToFloat(observed)
+    floatExp = convertToFloat(expected)
+    return convertToFloat(abs(floatObs - floatExp))
+
 def convertToFloat(target):
     result = 0.0
     if target is not None:
@@ -122,6 +160,68 @@ def convertToFloat(target):
             result = 0.0
 
     return result
+
+def calculateMean(extractedWorksheetData):
+    """Calculates the mean of the float data set.
+
+    Assumes the extractedWorksheetData is a dictionary-of-dictionaries with the
+    second level of dictionaries containing all the same keys.
+
+    :params extractedWorksheetData: Dictionary-of-dictionaries containing float
+                                    values.
+    :returns:                       Mean of all the float values.
+    """
+    results = 0.0
+    meanNumerator = 0.0
+    numItems = 0.0
+    for valSet in extractedWorksheetData.values():
+        values = valSet.values()
+        numItems = numItems + len(values)
+        meanNumerator = meanNumerator + fsum(values)
+    
+    if numItems != 0:
+        results = convertToFloat(meanNumerator / numItems)
+
+    return results
+
+def calculateStandardDeviation(extractedWorksheetData, mean):
+    """Calculates the standard deviation of the float data set.
+
+    Assumes the extractedWorksheetData is a dictionary-of-dictionaries with the
+    second level of dictionaries containing all the same keys.
+
+    :params extractedWorksheetData: Dictionary-of-dictionaries containing
+                                    float values.
+    :params mean:                   Mean over all the float values.
+    :returns:                       Standard deviation of all the float values.
+    """
+    results = 0.0
+    numItems = 0.0
+    stdNumerator = 0.0
+    for valSet in extractedWorksheetData.values():
+        values = valSet.values()
+        numItems = numItems + len(values)
+        for val in values:
+            stdNumerator = stdNumerator + pow(val - mean, 2)
+
+    if numItems != 0.0:
+        results = sqrt(stdNumerator / numItems)
+
+    return results
+
+def printExtractedData(extractedWorksheetData, title):
+    """For testing purposes only, prints all the keys and subkeys of the dict.
+
+    Prints out the keys and subkeys of the dictionary-of-dictionaries, which is
+    the extracted worksheet data.
+    """
+    print(title)
+    print("========================")
+    for worksheetTitle in extractedWorksheetData.keys():
+        print(worksheetTitle)
+        worksheet = extractedWorksheetData[worksheetTitle]
+        for subTitle in worksheet.keys():
+            print(subTitle + ": " + str(worksheet[subTitle]))
 
 # SCRIPT START
 
@@ -138,12 +238,14 @@ wsNames = inWorkbook.get_sheet_names()
 for name in wsNames:
     worksheet = inWorkbook.get_sheet_by_name(name)
     if validWorksheet(worksheet):
-        data = extractAndCalculateData(worksheet)
+        data = extractAndCalculateData(worksheet, differenceFormula)
         results[worksheet.title] = data
     else:
         failures.append(worksheet.title)
 
-# Prints headers
+results = calculateStandardScore(results)
+
+# Results Printing
 headerRi = 1
 headerCi = 1
 wsResults.cell(row = headerRi, column = headerCi).value = "Virus"
